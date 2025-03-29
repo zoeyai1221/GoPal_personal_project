@@ -1,1 +1,1 @@
-# GoPal-_personal_project
+# GoPal_personal_project
