@@ -5,6 +5,8 @@ const PORT: number = 4000;
 
 // TASK:
 // 1. Add a helper method to wrap HTML content in a template
+// 2. Add navigation bar
+// 3. Add Services page
 const renderPage = (title: string, content: string): string => {
     return `
       <!DOCTYPE html>
@@ -13,6 +15,13 @@ const renderPage = (title: string, content: string): string => {
         <title>${title}</title>
       </head>
       <body>
+        <nav>
+          <a href="/">GoPal</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+          <a href="/random">Random Quote</a>
+          <a href="/services">Services</a>
+        </nav>
         ${content}
       </body>
       </html>
@@ -52,6 +61,13 @@ const server = http.createServer((req, res) => {
             'Random Quote',
             `<h1>Random Inspirational Quote</h1><p>${randomQuote}</p>`
         )
+    );
+  } else if (req.url === '/services') { // add services page
+    res.end(
+      renderPage(
+        'Services',
+        '<h1>Our Services</h1><p>We provide blahblah services.</p>'
+      )
     );
   } else {
     // Default route ("/") with dynamic date and time
