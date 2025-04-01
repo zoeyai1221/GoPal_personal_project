@@ -7,12 +7,19 @@ const PORT: number = 4000;
 // 1. Add a helper method to wrap HTML content in a template
 // 2. Add navigation bar
 // 3. Add Services page
+// 4. Refine with CSS
 const renderPage = (title: string, content: string): string => {
     return `
       <!DOCTYPE html>
       <html>
       <head>
         <title>${title}</title>
+        <style>
+          body { color: #f4a460; font-family: Arial, sans-serif; font-weight: 600; margin: 20px; }
+          nav { background: #db7093; padding: 10px; text-align: center; }
+          nav a { color: white; margin: 0 15px; text-decoration: none; font-family: "Winky Sans", sans-serif; }
+          nav a:hover { text-decoration: underline; }
+        </style>
       </head>
       <body>
         <nav>
@@ -37,21 +44,22 @@ const server = http.createServer((req, res) => {
     res.end(
         renderPage(
             'About',
-            '<h1>About Us</h1><p>This is a simple Node.js web app example using TypeScript!</p>'
+            `<h1>About Us</h1>
+            <p>This is a simple Node.js web app example using TypeScript!</p>`
         )
     );
   } else if (req.url === '/contact') {
     res.end(
         renderPage(
             'Contact',
-            '<h1>Contact Us</h1><p>Email: 5176@gopal.com</p>'
+            '<h1>Contact Us</h1><p>Email: iMeat@gopal.com</p>'
         )
     );
   } else if (req.url === '/random') {
     // Random quote functionality
     const quotes: string[] = [
-      'Keep pushing forward!',
-      'Code is like humor. When you have to explain it, it’s bad.',
+      'Keep eating!',
+      'Food is like humor. When you have to explain it, it’s bad.',
       'Fix the cause, not the symptom.',
       'Optimism is an occupational hazard of programming.'
     ];
@@ -66,7 +74,7 @@ const server = http.createServer((req, res) => {
     res.end(
       renderPage(
         'Services',
-        '<h1>Our Services</h1><p>We provide blahblah services.</p>'
+        `<h1>Our Services</h1><p>We provide blahblah services.</p>`
       )
     );
   } else {
@@ -75,7 +83,9 @@ const server = http.createServer((req, res) => {
     res.end(
         renderPage(
             'GoPal',
-            `<h1>Hello, World!</h1><p>Welcome to your naive Node.js web app built with TypeScript.</p><p>Current Date & Time: ${currentDate}</p>`
+            `<h1>Let's Go To Eat, Pal!</h1>
+            <p>Welcome to GoPal to explore your favorite restaurants with buddies!</p>
+            <p>Current Date & Time: ${currentDate}</p>`
         )
     );
   }
