@@ -8,6 +8,22 @@ const PORT: number = 4000;
 // 2. Add navigation bar
 // 3. Add Services page
 // 4. Refine with CSS
+
+// add interface and lamda function to generate navBars
+interface NavBarItem {
+  href: string,
+  title: string
+}
+let navBarItems: NavBarItem[] = [
+  {href: "/", title: "GoPal"},
+  {href: "/about", title: "About"},
+  {href: "/contact", title: "Contact"},
+  {href: "/random", title: "Random Quote"},
+  {href: "/services", title: "Services"},
+]
+
+let navBar = navBarItems.map(item => `<a href="${item.href}">${item.title}</a>`).join("\n")
+
 const renderPage = (title: string, content: string): string => {
     return `
       <!DOCTYPE html>
@@ -23,11 +39,12 @@ const renderPage = (title: string, content: string): string => {
       </head>
       <body>
         <nav>
-          <a href="/">GoPal</a>
+          <!-- <a href="/">GoPal</a>
           <a href="/about">About</a>
           <a href="/contact">Contact</a>
           <a href="/random">Random Quote</a>
-          <a href="/services">Services</a>
+          <a href="/services">Services</a> -->
+          ${navBar}
         </nav>
         ${content}
       </body>
