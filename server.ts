@@ -1,6 +1,6 @@
 // server.ts
 import http from 'http';
-// Define the port (you can change this later)
+// Define the port
 const PORT: number = 4000;
 
 // TASK:
@@ -9,27 +9,62 @@ const PORT: number = 4000;
 // 3. Add Services page
 // 4. Refine with CSS
 
-// add interface and lamda function to generate navBars
+// Add interface and lamda function to generate page and navBars
+interface Page {
+  navBarItem: NavBarItem,
+  pageContent: string
+}
 interface NavBarItem {
   href: string,
   title: string
 }
-let navBarItems: NavBarItem[] = [
-  {href: "/", title: "GoPal"},
-  {href: "/about", title: "About"},
-  {href: "/contact", title: "Contact"},
-  {href: "/random", title: "Random Quote"},
-  {href: "/services", title: "Services"},
+
+let pages: Page[] = [
+  {
+    navBarItem: {href: "/", title: "GoPal"},
+    pageContent: `<h1>Let's Go To Eat, Pal!</h1> \
+    <p>Welcome to GoPal to explore your favorite restaurants with buddies!</p>`
+  },
+  {
+    navBarItem: {href: "/about", title: "About"},
+    pageContent: `<h1>About Us</h1>
+            <p>This is a simple Node.js web app example using TypeScript!</p>`
+  },
+  {
+    navBarItem: {href: "/contact", title: "Contact"},
+    pageContent: `<h1>Contact Us</h1><p>Email: iMeat@gopal.com</p>`
+  },
+  {
+    navBarItem: {href: "/random", title: "Random Quote"},
+    pageContent:`<h1>Random Inspirational Quote</h1>` //special handling
+  },
+  {
+    navBarItem: {href: "/services", title: "Services"},
+    pageContent: `<h1>Our Services</h1><p>We provide blahblah services.</p>`
+  }
 ]
 
-let navBar = navBarItems.map(item => `<a href="${item.href}">${item.title}</a>`).join("\n")
+let pageMap: Map<string,Page> = new Map(pages.map(page => [page.navBarItem.href, page]));
 
-const renderPage = (title: string, content: string): string => {
+let navBarItems: NavBarItem[] = pages.map(page => page.navBarItem);
+// let navBarItems: NavBarItem[] = [
+//   {href: "/", title: "GoPal"},
+//   {href: "/about", title: "About"},
+//   {href: "/contact", title: "Contact"},
+//   {href: "/random", title: "Random Quote"},
+//   {href: "/services", title: "Services"},
+// ]
+
+let navBar = navBarItems.map(item => `<a href="${item.href}">${item.title}</a>`).join("\n");
+
+function renderPage(page: Page, bodyContent?: string): string {
+  let content = page.pageContent + (bodyContent ?? "");
+
     return `
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${title}</title>
+        <title>${page.navBarItem.title}</title>
         <style>
           body { color: #f4a460; font-family: Arial, sans-serif; font-weight: 600; margin: 20px; }
           nav { background: #db7093; padding: 10px; text-align: center; }
@@ -52,61 +87,54 @@ const renderPage = (title: string, content: string): string => {
     `;
 };
 
-// Create a server that listens for HTTP requests
-const server = http.createServer((req, res) => {
+// Create function that listens for HTTP requests
+function handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
   console.log(`${req.method} ${req.url}`);
-  // Set response header for HTML content
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  if (req.url === '/about') {
-    res.end(
-        renderPage(
-            'About',
-            `<h1>About Us</h1>
-            <p>This is a simple Node.js web app example using TypeScript!</p>`
-        )
-    );
-  } else if (req.url === '/contact') {
-    res.end(
-        renderPage(
-            'Contact',
-            '<h1>Contact Us</h1><p>Email: iMeat@gopal.com</p>'
-        )
-    );
-  } else if (req.url === '/random') {
-    // Random quote functionality
+
+  if (req.url === "/") {
+    // Default route ("/") with dynamic date and time
+    const currentDate: string = new Date().toLocaleString();
+    let page = pageMap.get("/");
+    if (page) {
+      res.writeHead(200, {'Content-Type': 'text.html'});
+      res.end(renderPage(page,`<p>Current Date & Time: ${currentDate}</p>`));
+    } else {
+      res.writeHead(404);
+      res.end("404 Page Not Found");
+    }
+    return;
+  }
+
+  if (req.url === "/random") {
     const quotes: string[] = [
-      'Keep eating!',
-      'Food is like humor. When you have to explain it, it’s bad.',
+      'Keep pushing forward!',
+      'Code is like humor. When you have to explain it, it’s bad.',
       'Fix the cause, not the symptom.',
       'Optimism is an occupational hazard of programming.'
     ];
     const randomQuote: string = quotes[Math.floor(Math.random() * quotes.length)];
-    res.end(
-        renderPage(
-            'Random Quote',
-            `<h1>Random Inspirational Quote</h1><p>${randomQuote}</p>`
-        )
-    );
-  } else if (req.url === '/services') { // add services page
-    res.end(
-      renderPage(
-        'Services',
-        `<h1>Our Services</h1><p>We provide blahblah services.</p>`
-      )
-    );
-  } else {
-    // Default route ("/") with dynamic date and time
-    const currentDate: string = new Date().toLocaleString();
-    res.end(
-        renderPage(
-            'GoPal',
-            `<h1>Let's Go To Eat, Pal!</h1>
-            <p>Welcome to GoPal to explore your favorite restaurants with buddies!</p>
-            <p>Current Date & Time: ${currentDate}</p>`
-        )
-    );
+    let page = pageMap.get("/random");
+    if (page) {
+      res.writeHead(200, {'Content-Type': 'text.html'});
+      res.end(renderPage(page,`<p>${randomQuote}</p>`));
+    } else {
+      res.writeHead(404);
+      res.end("404 Page Not Found");
+    }
+    return;
   }
-});
+
+  let page = pageMap.get(req.url ?? "/")
+  if (page) {
+    res.writeHead(200, {'Content-Type': 'text.html'});
+    res.end(renderPage(page));
+  } else {
+    res.writeHead(404);
+    res.end("404 Page Not Found");
+  }
+}
+
+let server = http.createServer(handleRequest);
 // Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
