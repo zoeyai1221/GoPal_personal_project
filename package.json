@@ -10,7 +10,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/express": "^5.0.1",
     "@types/node": "^22.13.14",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   }
 }
