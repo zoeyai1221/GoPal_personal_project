@@ -5,6 +5,8 @@ import path from 'path';
 
 // Define the port
 const PORT: number = 4000;
+// Reload files from disk every 10 minutes
+const CACHE_EXPIRY = 10 * 60 * 10000; // 10mins = 600000ms
 
 interface Page {
   navBarItem: NavBarItem,
@@ -29,16 +31,19 @@ const pagesToLoad = [
   { href: "/services", title: "Services", filename: "services.html" },
 ];
 
+// Initiate cache object
+const pageMap = new Map<string, Page>();
+
 // Load all the pages by reading from html files
 async function loadPages(): Promise<Map<string, Page>> {
   // Initiate an empty new Map to store url/route and Page
-  const pageMap = new Map<string, Page>();
   for (let page of pagesToLoad) {
     // extract file path like
     // __dirname = /Users/you/NodeProject | page.filename = "about.html"
     // /Users/you/NodeProject/pages/about.html
     const filePath = path.join(__dirname, 'pages', page.filename); 
-    let content = await fs.readFile(filePath, 'utf-8'); // read from html file and convert to utf8 string
+    // read from html file and convert to utf8 string
+    let content = await fs.readFile(filePath, 'utf-8');  // fs.readFile() is async; compared to fs.readFileSync 
 
     // set up the new Map with content
     pageMap.set(page.href, {
@@ -123,8 +128,20 @@ function handleRequest(pageMap: Map<string, Page>): http.RequestListener {
 async function main() {
   // call the function to load page
   let pageMap = await loadPages();
-  let server = http.createServer(handleRequest(pageMap));
+  console.log('Pages loaded into memory');
+
+  // Simulate a cache expiry
+  setInterval(async () => {
+    try {
+      pageMap = await loadPages();
+      console.log("Page cache refreshed at", new Date().toLocaleTimeString);
+    } catch (err) {
+      console.error("Failed to refresh page cache:", err);
+    }
+  }, CACHE_EXPIRY);
+
   // Start the server
+  let server = http.createServer(handleRequest(pageMap));
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)
   });
