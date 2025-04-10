@@ -20,6 +20,9 @@ yarn-error.log
 jspm_packages/
 
 # Package files
+<<<<<<< HEAD
+*.tgz
+=======
 *.tgz
 
 # Ignore all .js files
