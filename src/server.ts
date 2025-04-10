@@ -2,15 +2,19 @@
 import http from 'http';
 import fs from 'fs/promises';
 import path from 'path';
+import { pageContentGenerator as indexPageContent } from './pages/index';
 
 // Define the port
 const PORT: number = 4000;
 // Reload files from disk every 10 minutes
 const CACHE_EXPIRY = 10 * 60 * 10000; // 10mins = 600000ms
+const INDEX_PAGE_HREF = "/";
+const RANDOM_PAGE_HREF = "/random";
 
 interface Page {
   navBarItem: NavBarItem,
-  pageContent: string,
+  // pageContent: string,
+  pageContentGenerator: (req: http.IncomingMessage) => string
 }
 
 interface NavBarItem {
@@ -33,30 +37,40 @@ const pagesToLoad = [
 
 // Initiate cache object
 const pageMap = new Map<string, Page>();
+const navBarItems: Map<string, string> = new Map(pagesToLoad.map(i => [i.href, i.title]));
 
 // Load all the pages by reading from html files
 async function loadPages(): Promise<Map<string, Page>> {
+  console.log("Loading the page...");
   // Initiate an empty new Map to store url/route and Page
   for (let page of pagesToLoad) {
     // extract file path like
     // __dirname = /Users/you/NodeProject | page.filename = "about.html"
     // /Users/you/NodeProject/pages/about.html
-    const filePath = path.join(__dirname, 'pages', page.filename); 
+    const filePath = path.join(__dirname, 'templates', page.filename); 
     // read from html file and convert to utf8 string
     let content = await fs.readFile(filePath, 'utf-8');  // fs.readFile() is async; compared to fs.readFileSync 
 
     // set up the new Map with content
     pageMap.set(page.href, {
       navBarItem: { href: page.href, title: page.title},
-      pageContent: content
+      pageContentGenerator: () => content
     });
   }
+  
+  const filePath = path.join(__dirname, 'templates', "index.html"); 
+  let content = await fs.readFile(filePath, 'utf-8');
+  pageMap.set(INDEX_PAGE_HREF, {
+    navBarItem: {href: INDEX_PAGE_HREF, title: navBarItems.get(INDEX_PAGE_HREF)!},
+    pageContentGenerator: (req) => content+indexPageContent(req)
+  });
+
   return pageMap;
 };
 
 // Render the page
-function renderPage(page: Page, extraContent?: string): string {
-  let content = page.pageContent + (extraContent ?? "");
+function renderPage(page: Page, req:http.IncomingMessage,  extraContent?: string): string {
+  let content = page.pageContentGenerator(req) + (extraContent ?? "");
   const navBar = pagesToLoad.map(item =>`<a href=${item.href}>${item.title}</a>`).join("\n");
 
     return `
@@ -88,37 +102,37 @@ function handleRequest(pageMap: Map<string, Page>): http.RequestListener {
     let page = pageMap.get(req.url ?? "/");
   
     // special handling for page of main
-    if (req.url === "/" && page) {
-      // Default route ("/") with dynamic date and time
-      const currentDate: string = new Date().toLocaleString();
-      res.writeHead(200, {'Content-Type': 'text.html'});
-      res.end(renderPage(page,`<p>Current Date & Time: ${currentDate}</p>`));
-      return;
-    }
+    // if (req.url === "/" && page) {
+    //   // Default route ("/") with dynamic date and time
+    //   const currentDate: string = new Date().toLocaleString();
+    //   res.writeHead(200, {'Content-Type': 'text.html'});
+    //   res.end(renderPage(page,`<p>Current Date & Time: ${currentDate}</p>`));
+    //   return;
+    // }
 
-    // special handling for page of random
-    if (req.url === "/random" && page) {
-      const quotes: string[] = [
-        'Keep pushing forward!',
-        'Code is like humor. When you have to explain it, it’s bad.',
-        'Fix the cause, not the symptom.',
-        'Optimism is an occupational hazard of programming.'
-      ];
-      const randomQuote: string = quotes[Math.floor(Math.random() * quotes.length)];
-      res.writeHead(200, {'Content-Type': 'text.html'});
-      res.end(renderPage(page,`<p>${randomQuote}</p>`));
-      return;
-    }
+    // // special handling for page of random
+    // if (req.url === "/random" && page) {
+    //   const quotes: string[] = [
+    //     'Keep pushing forward!',
+    //     'Code is like humor. When you have to explain it, it’s bad.',
+    //     'Fix the cause, not the symptom.',
+    //     'Optimism is an occupational hazard of programming.'
+    //   ];
+    //   const randomQuote: string = quotes[Math.floor(Math.random() * quotes.length)];
+    //   res.writeHead(200, {'Content-Type': 'text/html'});
+    //   res.end(renderPage(page,`<p>${randomQuote}</p>`));
+    //   return;
+    // }
     
     // general render handling
     if (page) {
-      res.writeHead(200, {'Content-Type': 'text.html'});
-      res.end(renderPage(page));
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.end(renderPage(page,req));
     } else {
-      res.writeHead(404, {'Content-Type': 'text.html'});
+      res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(renderPage(
         {navBarItem: {href: req.url ?? "", title: "404 Not Found"},
-          pageContent:""},
+          pageContentGenerator : ()=> ""}, req,
         `<h1>404 Not Found</h1><p>Sorry, the page you are looking for doesn't exist. Please try again!</p>`
       ));
     }
@@ -127,14 +141,17 @@ function handleRequest(pageMap: Map<string, Page>): http.RequestListener {
 
 async function main() {
   // call the function to load page
+  // let pageMap = await loadPages();
   let pageMap = await loadPages();
+  // console.log(pageMap);
+
   console.log('Pages loaded into memory');
 
   // Simulate a cache expiry
   setInterval(async () => {
     try {
       pageMap = await loadPages();
-      console.log("Page cache refreshed at", new Date().toLocaleTimeString);
+      console.log("Page cache refreshed at", new Date().toLocaleString);
     } catch (err) {
       console.error("Failed to refresh page cache:", err);
     }
