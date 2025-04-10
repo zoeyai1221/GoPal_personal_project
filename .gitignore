@@ -21,3 +21,6 @@ jspm_packages/
 
 # Package files
 *.tgz
+
+# Ignore all .js files
+*.js
