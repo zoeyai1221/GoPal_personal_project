@@ -3,8 +3,8 @@ import fs from 'fs';
 import http from 'http';
 
 export function generatePageContent (req: http.IncomingMessage, callback: (content:string) => void) {
-    const filePath = path.join(__dirname, '../templates', 'index.html')
-    
+    const filePath = path.join(__dirname, "../templates", "contact.html")
+
     fs.readFile(filePath, 'utf-8', (err, staticContent) => {
         if (err) {
             console.error("Error reading file:", err);
@@ -21,10 +21,8 @@ export function generatePageContent (req: http.IncomingMessage, callback: (conte
             </style>
             </head>
         `
-
         staticContent = staticContent.replace('</head>', style)
 
-        const currentDate: string = new Date().toLocaleString();
-        callback(staticContent + `<p>Current Date & Time: ${currentDate}.</p>`)
+        callback(staticContent);
     });
 }

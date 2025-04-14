@@ -3,7 +3,7 @@ import fs from 'fs';
 import http from 'http';
 
 export function generatePageContent (req: http.IncomingMessage, callback: (content:string) => void) {
-    const filePath = path.join(__dirname, '../templates', 'index.html')
+    const filePath = path.join(__dirname, '../templates', 'random.html')
     
     fs.readFile(filePath, 'utf-8', (err, staticContent) => {
         if (err) {
@@ -24,7 +24,14 @@ export function generatePageContent (req: http.IncomingMessage, callback: (conte
 
         staticContent = staticContent.replace('</head>', style)
 
-        const currentDate: string = new Date().toLocaleString();
-        callback(staticContent + `<p>Current Date & Time: ${currentDate}.</p>`)
+        const quotes: string[] = [
+            'Keep pushing forward!',
+            'Code is like humor. When you have to explain it, it’s bad.',
+            'Fix the cause, not the symptom.',
+            'Optimism is an occupational hazard of programming.'
+          ];
+        const randomQuote: string = quotes[Math.floor(Math.random() * quotes.length)];
+
+        callback(staticContent + `<p>${randomQuote}</p>`)
     });
 }
