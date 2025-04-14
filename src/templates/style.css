@@ -1,0 +1,12 @@
+body { 
+    color: #f4a460; font-family: Arial, sans-serif; font-weight: 600; margin: 20px; 
+}
+nav { 
+    background: #db7093; padding: 10px; text-align: center; 
+}
+nav a { 
+    color: white; margin: 0 15px; text-decoration: none; font-family: "Winky Sans", sans-serif; 
+}
+nav a:hover { 
+    text-decoration: underline; 
+}
