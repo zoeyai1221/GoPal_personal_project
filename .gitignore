@@ -5,7 +5,7 @@ yarn-error.log
 .env
 
 # Build output
-/dist
+*dist
 /build
 /coverage
 
