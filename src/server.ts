@@ -37,7 +37,7 @@ const server = http.createServer(async(req, res) => {
             res.end('<h1>Internal Server Error</h1>');
         }
     } else {
-        res.writeHead(404);
+        res.writeHead(404, {'Content-Type': 'text/html'});
         res.end("404 Page Not Found");
       }
 });
