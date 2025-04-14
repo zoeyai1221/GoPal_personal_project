@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  section.welcome-section
+    .welcome-content
+      .call-to-action
+        if user
+          a.btn.primary(href='/events/dining') Browse Events
+          a.btn.secondary(href='/events/create') Create Event
+        else
+          p.login-prompt Please login or register to browse and create events.
+          .auth-buttons
+            a.btn.primary(href='/login') Login
+            a.btn.secondary(href='/register') Register
+

@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  h2.section-title Create New Dining Event
+  
+  form.form-container(action='/events/create' method='POST')
+    .form-group
+      label(for='eventName') Event Name
+      input#eventName(type='text' name='name' required)
+    
+    .form-group
+      label(for='eventLocation') Location
+      input#eventLocation(type='text' name='location' required)
+    
+    .form-group
+      label(for='eventDate') Date
+      input#eventDate(type='date' name='date' required)
+    
+    .form-group
+      label(for='eventTime') Time
+      input#eventTime(type='time' name='time' required)
+    
+    .form-group
+      label(for='eventDescription') Description
+      textarea#eventDescription(name='description' rows='4' required)
+    
+    .form-group
+      label(for='eventMaxAttendees') Maximum Attendees
+      input#eventMaxAttendees(type='number' name='maxAttendees' min='1' value='5')
+    
+    .form-actions
+      button.btn.primary(type='submit') Create Event
+      a.btn.secondary(href='/events/dining') Cancel

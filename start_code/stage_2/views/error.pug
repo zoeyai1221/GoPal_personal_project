@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .error-container
+    h2.error-title Error
+    if error.status
+      h3 Status: #{error.status}
+    
+    if message
+      p.error-message= message
+    else
+      p.error-message An unexpected error occurred
+    
+    if error && error.stack && process.env.NODE_ENV === 'development'
+      pre.error-stack= error.stack
+    
+    .error-actions
+      a.btn.primary(href='/') Return to Home

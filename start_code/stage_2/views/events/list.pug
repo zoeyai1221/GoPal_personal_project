@@ -1,0 +1,47 @@
+extends ../layout
+
+block content
+  h2.section-title Dining Events
+  
+  .actions-bar
+    if user
+      a.btn.primary(href='/events/create') Create New Event
+    else
+      a.btn.primary(href='/login') Login to Create Event
+
+  if events && events.length > 0
+    .events-list
+      each event in events
+        .event-card
+          .event-header
+            h3.event-title= event.name
+            .event-meta
+              span.event-date
+                strong Date: 
+                | #{event.date} at #{event.time}
+              span.event-location
+                strong Location: 
+                | #{event.location}
+          
+          .event-body
+            p.event-description= event.description
+            .event-host
+              strong Hosted by: 
+              | #{event.host}
+            .event-attendees
+              strong Attendees: 
+              | #{event.attendees} people joined
+          
+          .event-actions
+            if user
+              form(action=`/events/join/${event.id}` method='POST')
+                button.btn.join-btn(type='submit') Join Event
+            else
+              a.btn.join-btn(href='/login') Login to Join
+  else
+    .empty-state
+      p No events found. Be the first to create a dining event!
+      if user
+        a.btn.secondary(href='/events/create') Create Event
+      else
+        a.btn.secondary(href='/login') Login to Create Event

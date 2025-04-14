@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  h2.section-title Register
+  
+  .auth-container
+    form.form-container(action='/register' method='POST')
+      .form-group
+        label(for='name') Name
+        input#name(type='text' name='name' required)
+      
+      .form-group
+        label(for='email') Email
+        input#email(type='email' name='email' required)
+      
+      .form-group
+        label(for='password') Password
+        input#password(type='password' name='password' required)
+      
+      .form-group
+        label(for='confirmPassword') Confirm Password
+        input#confirmPassword(type='password' name='confirmPassword' required)
+      
+      .form-actions
+        button.btn.primary(type='submit') Register
+    
+    .auth-links
+      p Already have an account? 
+        a(href='/login') Login here

@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  h2.section-title Login
+  
+  .auth-container
+    form.form-container(action='/login' method='POST')
+      .form-group
+        label(for='email') Email
+        input#email(type='email' name='email' required)
+      
+      .form-group
+        label(for='password') Password
+        input#password(type='password' name='password' required)
+      
+      .form-actions
+        button.btn.primary(type='submit') Login
+    
+    .auth-links
+      p Don't have an account? 
+        a(href='/register') Register here

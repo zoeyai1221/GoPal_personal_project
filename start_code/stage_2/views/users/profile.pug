@@ -1,0 +1,43 @@
+extends ../layout
+
+block content
+  h2.section-title User Profile
+  
+  if user
+    .profile-container
+      .profile-section
+        h3 Update Profile Information
+        form.form-container(action='/users/profile' method='POST')
+          .form-group
+            label(for='userName') User Name
+            input#userName(type='text' name='name' value=user.name required)
+          
+          .form-group
+            label(for='userEmail') Email
+            input#userEmail(type='email' name='email' value=user.email disabled)
+            small.form-text Email cannot be changed
+          
+          .form-actions
+            button.btn.primary(type='submit') Update Profile
+      
+      .profile-section
+        h3 Change Password
+        form.form-container(action='/users/change-password' method='POST')
+          .form-group
+            label(for='currentPassword') Current Password
+            input#currentPassword(type='password' name='currentPassword' required)
+          
+          .form-group
+            label(for='newPassword') New Password
+            input#newPassword(type='password' name='newPassword' required)
+          
+          .form-group
+            label(for='confirmPassword') Confirm New Password
+            input#confirmPassword(type='password' name='confirmPassword' required)
+          
+          .form-actions
+            button.btn.primary(type='submit') Change Password
+  else
+    .error-message
+      p You need to be logged in to view your profile.
+      a.btn.secondary(href='/login') Login

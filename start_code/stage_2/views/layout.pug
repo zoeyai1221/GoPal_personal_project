@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    header.header
+      .container
+        h1.header-title Go Pal!
+        nav.main-nav
+          ul
+            li
+              a(href='/') Home
+            if user
+              li
+                a(href='/events/dining') Browse Events
+              li
+                a(href='/events/create') Create Event
+              li
+                a(href='/users/profile') My Profile
+              li
+                a(href='/logout') Logout
+            else
+              li
+                a(href='/login') Login
+              li
+                a(href='/register') Register
+    
+    .container
+      if error
+        .alert.alert-danger= error
+      
+      block content
+        
+    script(src='/js/script.js')
