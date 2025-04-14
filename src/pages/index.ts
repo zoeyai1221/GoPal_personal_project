@@ -2,6 +2,20 @@ import path from 'path';
 import fs from 'fs';
 import http from 'http';
 
+interface NavBar {
+    href: string,
+    title: string,
+}
+
+let navBars : NavBar[] = [
+    {href: "/", title: "Go Pal"},
+    {href: "/about", title: "About"},
+    {href: "/contact", title: "Contact"},
+    {href: "/services", title: "Services"},
+    {href: "/random", title: "Random Quotes"},
+]
+
+let navBarLines :string = navBars.map(i => `<a href=${i.href}>${i.title}</a>`).join("\n");
 export function generatePageContent(req: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
         const filePath = path.join(__dirname, '../templates', 'index.html');
@@ -23,7 +37,7 @@ export function generatePageContent(req: http.IncomingMessage): Promise<string> 
             </head>
             `
 
-            staticContent = staticContent.replace('</head>', style)
+            staticContent = staticContent.replace('</head>', style).replace('<!--NavBarPlaceholder-->',navBarLines);
             const currentDate: string = new Date().toLocaleString();
             resolve(staticContent + `<p>Current Date & Time: ${currentDate}.</p>`);
         });
