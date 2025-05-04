@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 
 export interface User {
-  id?: number;
+  id: string; // Ensure id is always a string, not undefined
   name: string;
   email: string;
   password?: string; // Marked as optional since we don't want to include it in responses
@@ -18,6 +18,13 @@ export interface Event {
   host: string;
   attendees: number;
   maxAttendees?: number;
+}
+
+export interface Restaurant {
+  id: string;
+  name: string;
+  location: string;
+  cuisine: string;
 }
 
 // Express session with user property

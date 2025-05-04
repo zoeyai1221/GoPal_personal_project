@@ -5,6 +5,9 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
+// Import databases
+import { UserDatabase } from './db/userDatabase';
+
 // Import routes
 import indexRouter from './routes/index';
 import eventRouter from './routes/events';
@@ -13,6 +16,18 @@ import authRouter from './routes/auth';
 
 // Import types
 import { CustomError } from './types';
+
+// Initialize databases
+const userDb = new UserDatabase();
+
+Promise.all([
+  userDb.initialize(),
+]).then(() => {
+  console.log('All databases initialized successfully');
+}).catch(err => {
+  console.error('Error initializing databases:', err);
+  process.exit(1);
+});
 
 // Initialize Express app
 const app = express();
@@ -35,11 +50,25 @@ app.use(session({
   cookie: { secure: false } // Set to true in production with HTTPS
 }));
 
+
+// Add the current user to all views
+app.use((req, res, next) => {
+  if (req.session.user) {
+    res.locals.user = req.session.user;
+  }
+  next();
+});
+
 // Use routes
 app.use('/', indexRouter);
 app.use('/events', eventRouter);
 app.use('/users', userRouter);
 app.use('/', authRouter);
+
+// Home page redirect to events
+app.get('/', (req, res) => {
+  res.redirect('/events');
+});
 
 // Error handling middleware - 404
 app.use((req: Request, res: Response, next: NextFunction) => {
