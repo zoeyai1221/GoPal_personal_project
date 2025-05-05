@@ -1,10 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { Event, AuthenticatedRequest } from '../types';
 import { authMiddleware } from '../middlewares/auth';
-import { EventDatabase } from '../db/eventDatabase';
+// import { EventDatabase } from '../db/eventDatabase';
+import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
-const eventDb = new EventDatabase();
+// const eventDb = new EventDatabase();
+const eventDb = databaseManagerInstance.getEventDb();
 
 // Initialize the database when the module loads
 eventDb.initialize().catch(err => {
@@ -57,7 +59,7 @@ eventDb.initialize().catch(err => {
 // });
 router.get('/dining', (req: Request, res: Response) => {
   const events = eventDb.getAll();
-  res.render('event/list', {
+  res.render('events/list', {
     title: 'Dining Events',
     events,
     user: req.session.user

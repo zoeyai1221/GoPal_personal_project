@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
-import bodyParser from 'body-parser';
+// import bodyParser from 'body-parser';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -8,6 +8,7 @@ import logger from 'morgan';
 // Import databases
 import { UserDatabase } from './db/userDatabase';
 import { EventDatabase } from './db/eventDatabase';
+import databaseManagerInstance from './db/databaseManager';
 
 // Import routes
 import indexRouter from './routes/index';
@@ -19,18 +20,21 @@ import authRouter from './routes/auth';
 import { CustomError } from './types';
 
 // Initialize databases
-const userDb = new UserDatabase();
-const eventDb = new EventDatabase();
+// const userDb = new UserDatabase();
+// const eventDb = new EventDatabase();
+databaseManagerInstance.initialize();
 
-Promise.all([
-  userDb.initialize(),
-  eventDb.initialize(),
-]).then(() => {
-  console.log('All databases initialized successfully');
-}).catch(err => {
-  console.error('Error initializing databases:', err);
-  process.exit(1);
-});
+// Promise.all([
+//   userDb.initialize(),
+//   eventDb.initialize(),
+// ]).then(() => {
+//   console.log(`Loaded ${userDb.getAll().length} users from disk`);
+//   console.log(`Loaded ${eventDb.getAll().length} events from disk`);
+//   console.log('All databases initialized successfully');
+// }).catch(err => {
+//   console.error('Error initializing databases:', err);
+//   process.exit(1);
+// });
 
 // Initialize Express app
 const app = express();

@@ -1,9 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { Event } from '../types';
-import { EventDatabase } from '../db/eventDatabase';
+// import { Event } from '../types';
+// import { EventDatabase } from '../db/eventDatabase';
+import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
-const eventDb = new EventDatabase();
+// const eventDb = new EventDatabase();
+const eventDb = databaseManagerInstance.getEventDb();
 
 // Home route - now displays events list by default
 router.get('/', (req: Request, res: Response) => {

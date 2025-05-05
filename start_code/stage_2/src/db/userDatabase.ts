@@ -18,7 +18,7 @@ export class UserDatabase {
       users.forEach(user => {
         this.users.set(user.id, user);
       });
-      console.log(`Loaded ${this.users.size} users from disk`);
+      // console.log(`Loaded ${this.users.size} users from disk`);
     } catch (error: any) {
         // Handle if no such file or directory
         if (error.code === 'ENOENT') {
@@ -71,3 +71,5 @@ export class UserDatabase {
     return Array.from(this.users.values()).find(user => user.email === email);
   }
 }
+
+// export const userDb = new UserDatabase();

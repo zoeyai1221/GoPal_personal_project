@@ -18,8 +18,8 @@ export class EventDatabase {
             events.forEach(event => {
                 this.events.set(event.id, event);
             });
-            console.log(`Loaded ${this.events.size} events from disk`);
-            console.log('Events:', Array.from(this.events.values()));
+            // console.log(`Loaded ${this.events.size} events from disk`);
+            // console.log('Events:', Array.from(this.events.values()));
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 console.log('No existing event data found, starting with empty database');
@@ -77,3 +77,5 @@ export class EventDatabase {
         return this.events.delete(id);
     }
 }
+
+// export const eventDb = new EventDatabase();

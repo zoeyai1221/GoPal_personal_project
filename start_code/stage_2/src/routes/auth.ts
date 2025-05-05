@@ -1,9 +1,11 @@
 import { Request, Response, Router } from 'express';
 import { User } from '../types';
-import { UserDatabase } from '../db/userDatabase';
+// import { UserDatabase } from '../db/userDatabase';
+import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
-const userDb = new UserDatabase();
+// const userDb = new UserDatabase();
+const userDb = databaseManagerInstance.getUserDb();
 
 // Initialize the database when the module loads
 userDb.initialize().catch(err => {
@@ -101,7 +103,7 @@ router.post('/register', async (req: Request, res: Response) => {
   if (userDb.findByEmail(email)) {
     return res.render('auth/register', {
       title: 'Register',
-      error: 'Email already in user', 
+      error: 'Email already in use', 
       name
     });
   }
