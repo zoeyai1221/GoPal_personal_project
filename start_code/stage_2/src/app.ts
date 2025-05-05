@@ -7,6 +7,7 @@ import logger from 'morgan';
 
 // Import databases
 import { UserDatabase } from './db/userDatabase';
+import { EventDatabase } from './db/eventDatabase';
 
 // Import routes
 import indexRouter from './routes/index';
@@ -19,9 +20,11 @@ import { CustomError } from './types';
 
 // Initialize databases
 const userDb = new UserDatabase();
+const eventDb = new EventDatabase();
 
 Promise.all([
   userDb.initialize(),
+  eventDb.initialize(),
 ]).then(() => {
   console.log('All databases initialized successfully');
 }).catch(err => {

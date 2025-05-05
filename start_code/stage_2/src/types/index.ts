@@ -9,15 +9,17 @@ export interface User {
 }
 
 export interface Event {
-  id: number;
+  id: string;
   name: string;
   location: string;
   date: string;
   time: string;
   description: string;
   host: string;
-  attendees: number;
+  // attendees: number;
+  attendees: string[]; // Array of attendee IDs
   maxAttendees?: number;
+  restaurant: string; // Add name manually first for simplicity
 }
 
 export interface Restaurant {
