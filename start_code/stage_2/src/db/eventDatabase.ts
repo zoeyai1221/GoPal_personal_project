@@ -36,6 +36,7 @@ export class EventDatabase {
     }
 
     getAll(): Event[] {
+        console.log('Events:', this.events);
         return Array.from(this.events.values());
     }
 
