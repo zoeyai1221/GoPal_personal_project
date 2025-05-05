@@ -18,6 +18,13 @@ export class EventDatabase {
             events.forEach(event => {
                 this.events.set(event.id, event);
             });
+
+            // Rebase the counter so we don’t reissue existing IDs
+            const maxId = events
+            .map(event => parseInt(event.id, 10)) // convert IDs from string to int
+            .filter(n => !isNaN(n)) // filter out ilegitimate NaN
+            .reduce((m, n) => Math.max(m, n), 0); // get the current max ID
+            this.nextId = maxId + 1; // set nextId as maxId + 1
             // console.log(`Loaded ${this.events.size} events from disk`);
             // console.log('Events:', Array.from(this.events.values()));
         } catch (error: any) {

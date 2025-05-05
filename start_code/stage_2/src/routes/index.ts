@@ -6,6 +6,7 @@ import databaseManagerInstance from '../db/databaseManager';
 const router: Router = Router();
 // const eventDb = new EventDatabase();
 const eventDb = databaseManagerInstance.getEventDb();
+const userDb = databaseManagerInstance.getUserDb();
 
 // Home route - now displays events list by default
 router.get('/', (req: Request, res: Response) => {
@@ -43,10 +44,19 @@ router.get('/', (req: Request, res: Response) => {
   //   }
   // ];
   const events = eventDb.getAll();
+
+  // Return host name on the event's page
+  const eventsWithHostName = events.map(event => {
+    const hostUser = userDb.getById(event.host);
+    return {
+      ...event,
+      hostName: hostUser ? hostUser.name : 'Unknown'
+    };
+  });
   
   res.render('events/list', { 
     title: 'Dining Events', 
-    events, 
+    events: eventsWithHostName, 
     user: req.session.user 
   });
 });

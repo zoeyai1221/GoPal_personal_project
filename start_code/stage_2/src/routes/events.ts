@@ -7,6 +7,7 @@ import databaseManagerInstance from '../db/databaseManager';
 const router: Router = Router();
 // const eventDb = new EventDatabase();
 const eventDb = databaseManagerInstance.getEventDb();
+const userDb = databaseManagerInstance.getUserDb();
 
 // Initialize the database when the module loads
 eventDb.initialize().catch(err => {
@@ -59,9 +60,18 @@ eventDb.initialize().catch(err => {
 // });
 router.get('/dining', (req: Request, res: Response) => {
   const events = eventDb.getAll();
+
+  const eventsWithHostName = events.map(event => {
+    const hostUser = userDb.getById(event.host);
+    return {
+      ...event,
+      hostName: hostUser ? hostUser.name : 'Unknown'
+    };
+  });
+
   res.render('events/list', {
     title: 'Dining Events',
-    events,
+    events: eventsWithHostName,
     user: req.session.user
   });
 })
