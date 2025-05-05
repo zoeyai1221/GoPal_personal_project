@@ -30,7 +30,7 @@ block content
               | #{event.host}
             .event-attendees
               strong Attendees: 
-              | #{event.attendees} people joined
+              | #{event.attendees.length} people joined
           
           .event-actions
             if user
