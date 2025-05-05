@@ -1,10 +1,10 @@
 import { Request, Response, Router } from 'express';
 import { Event, AuthenticatedRequest } from '../types';
 import { authMiddleware } from '../middlewares/auth';
-import { EventDatabase } from '../db/eventDatabase';
+import databaseManagerInstance from "../db/databaseManager";
 
 const router: Router = Router();
-const eventDb = new EventDatabase();
+const eventDb = databaseManagerInstance.getEventDb();
 
 // Initialize the database when the module loads
 eventDb.initialize().catch(err => {
@@ -13,38 +13,38 @@ eventDb.initialize().catch(err => {
 })
 
 // Event list route - displays all dining events (no auth required to view)
-router.get('/dining', (req: Request, res: Response) => {
-  // In a complete implementation, this would fetch events from a database
-  // For the starter code, we'll use hardcoded sample data
-  const events: Event[] = [
-    {
-      id: "1",
-      name: 'Italian Dinner Night',
-      location: 'Luigi\'s Restaurant',
-      date: '2025-04-20',
-      time: '19:00',
-      description: 'Join us for a lovely Italian dinner!',
-      host: 'John Doe',
-      attendees: ["id"],
-      restaurant: 'Luigi\'s Restaurant',
-      maxAttendees: 10
-    }
-  ];
-  
-  res.render('events/list', { 
-    title: 'Dining Events', 
-    events, 
-    user: req.session.user 
-  });
-});
 // router.get('/dining', (req: Request, res: Response) => {
-//   const events = eventDb.getAll();
-//   res.render('event/list', {
-//     title: 'Dining Events',
-//     events,
-//     user: req.session.user
+//   // In a complete implementation, this would fetch events from a database
+//   // For the starter code, we'll use hardcoded sample data
+//   const events: Event[] = [
+//     {
+//       id: "1",
+//       name: 'Italian Dinner Night',
+//       location: 'Luigi\'s Restaurant',
+//       date: '2025-04-20',
+//       time: '19:00',
+//       description: 'Join us for a lovely Italian dinner!',
+//       host: 'John Doe',
+//       attendees: ["id"],
+//       restaurant: 'Luigi\'s Restaurant',
+//       maxAttendees: 10
+//     }
+//   ];
+  
+//   res.render('events/list', { 
+//     title: 'Dining Events', 
+//     events, 
+//     user: req.session.user 
 //   });
-// })
+// });
+router.get('/dining', (req: Request, res: Response) => {
+  const events = eventDb.getAll();
+  res.render('events/list', {
+    title: 'Dining Events',
+    events,
+    user: req.session.user
+  });
+})
 
 
 // Get form for creating a new event

@@ -1,13 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
-import bodyParser from 'body-parser';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-
-// Import databases
-import { UserDatabase } from './db/userDatabase';
-import { EventDatabase } from './db/eventDatabase';
 
 // Import routes
 import indexRouter from './routes/index';
@@ -19,18 +14,9 @@ import authRouter from './routes/auth';
 import { CustomError } from './types';
 
 // Initialize databases
-const userDb = new UserDatabase();
-const eventDb = new EventDatabase();
+import databaseManagerInstance from "./db/databaseManager";
 
-Promise.all([
-  userDb.initialize(),
-  eventDb.initialize(),
-]).then(() => {
-  console.log('All databases initialized successfully');
-}).catch(err => {
-  console.error('Error initializing databases:', err);
-  process.exit(1);
-});
+databaseManagerInstance.initialize();
 
 // Initialize Express app
 const app = express();

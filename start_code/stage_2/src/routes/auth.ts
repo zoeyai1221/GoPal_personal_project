@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
 import { User } from '../types';
-import { UserDatabase } from '../db/userDatabase';
+import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
-const userDb = new UserDatabase();
+const userDb = databaseManagerInstance.getUserDb();
 
 // Initialize the database when the module loads
 userDb.initialize().catch(err => {
