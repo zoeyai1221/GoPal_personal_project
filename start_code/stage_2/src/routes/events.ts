@@ -1,11 +1,9 @@
 import { Request, Response, Router } from 'express';
 import { Event, AuthenticatedRequest } from '../types';
 import { authMiddleware } from '../middlewares/auth';
-// import { EventDatabase } from '../db/eventDatabase';
 import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
-// const eventDb = new EventDatabase();
 const eventDb = databaseManagerInstance.getEventDb();
 const userDb = databaseManagerInstance.getUserDb();
 
@@ -16,48 +14,6 @@ eventDb.initialize().catch(err => {
 })
 
 // Event list route - displays all dining events (no auth required to view)
-// router.get('/dining', (req: Request, res: Response) => {
-//   // In a complete implementation, this would fetch events from a database
-//   // For the starter code, we'll use hardcoded sample data
-//   const events: Event[] = [
-//     {
-//       id: 1,
-//       name: 'Italian Dinner Night',
-//       location: 'Luigi\'s Restaurant',
-//       date: '2025-04-20',
-//       time: '19:00',
-//       description: 'Join us for a lovely Italian dinner!',
-//       host: 'John Doe',
-//       attendees: 3
-//     },
-//     {
-//       id: 2,
-//       name: 'Sushi Lunch',
-//       location: 'Sakura Sushi Bar',
-//       date: '2025-04-25',
-//       time: '12:30',
-//       description: 'Casual lunch meetup for sushi lovers',
-//       host: 'Jane Smith',
-//       attendees: 5
-//     },
-//     {
-//       id: 3,
-//       name: 'BBQ in the Park',
-//       location: 'Central Park',
-//       date: '2025-05-01',
-//       time: '17:00',
-//       description: 'Outdoor BBQ with games and activities',
-//       host: 'Mike Johnson',
-//       attendees: 10
-//     }
-//   ];
-  
-//   res.render('events/list', { 
-//     title: 'Dining Events', 
-//     events, 
-//     user: req.session.user 
-//   });
-// });
 router.get('/dining', (req: Request, res: Response) => {
   const events = eventDb.getAll();
 
@@ -95,12 +51,6 @@ router.post('/create', authMiddleware, async (req: Request, res: Response) => {
     res.status(401).json({ error: 'Not authenticated'});
     return;
   }
-  // In a real implementation, this would save to a database
-  // For the starter code, we'll return a 404 error as specified in requirements
-  // res.status(404).json({ 
-  //   error: 'API not implemented',
-  //   message: 'This is a starter code. The backend API for creating events is not implemented.' 
-  // });
 
   const { name, date, time, description, location, restaurant } = req.body;
 
@@ -130,26 +80,41 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
 
   const eventId: string = req.params.id; // param - :xxx (:id)
   const userId = req.session.user.id;
-  
-  // In a real implementation, this would update the database
-  // For the starter code, we'll return a 404 error as specified in requirements
-  // res.status(404).json({ 
-  //   error: 'API not implemented',
-  //   message: 'This is a starter code. The backend API for joining events is not implemented.',
-  //   eventId
-  // });
+
   const event = eventDb.getById(eventId);
   if (!event) {
     res.status(404).json({ error: 'Event not found' });
     return;
   }
 
-  if (!event.attendees.includes(userId)) {
+  // prompt message
+  let message: string = '';
+
+  
+  if (event.attendees.includes(userId)) {
+      message = 'You already joined this event!';
+  } else {
     event.attendees.push(userId);
     await eventDb.save();
+    message = 'You have successfully joined! Enjoy the meal with your buddy!';
   }
 
-  res.redirect('/');
+  const events = eventDb.getAll();
+  const eventsWithHostName = events.map(event => {
+    const hostUser = userDb.getById(event.host);
+    return {
+      ...event,
+      hostName: hostUser ? hostUser.name : 'Unknown'
+    };
+  });
+
+  // render the page with prompt
+  res.render('events/list', {
+    title:       'Dining Events',
+    events: eventsWithHostName,
+    user:        req.session.user,
+    message,
+  });
 });
 
 // Get details for a specific event

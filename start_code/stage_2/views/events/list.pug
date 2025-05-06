@@ -2,7 +2,11 @@ extends ../layout
 
 block content
   h2.section-title Dining Events
-  
+
+  if message
+    script.
+      window.alert("#{message}");
+
   .actions-bar
     if user
       a.btn.primary(href='/events/create') Create New Event
