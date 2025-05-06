@@ -94,8 +94,8 @@ router.post('/register', async (req: Request, res: Response) => {
     return res.render('auth/register', {
       title: 'Register',
       error: 'Passwords do not match',
-      name,
-      email
+      name, // backfill
+      email // backfill
     });
   }
 
@@ -104,7 +104,7 @@ router.post('/register', async (req: Request, res: Response) => {
     return res.render('auth/register', {
       title: 'Register',
       error: 'Email already in use', 
-      name
+      name // backfill
     });
   }
 
