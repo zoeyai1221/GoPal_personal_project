@@ -23,9 +23,9 @@ block content
               span.event-date
                 strong Date: 
                 | #{event.date} at #{event.time}
-              span.event-location
-                strong Location: 
-                | #{event.location}
+              span.event-restaurant
+                strong Restaurant: 
+                | #{event.restaurant}
           
           .event-body
             p.event-description= event.description
@@ -40,6 +40,8 @@ block content
             if user
               form(action=`/events/join/${event.id}` method='POST')
                 button.btn.join-btn(type='submit') Join Event
+              form(action=`/events/${event.id}`)
+                button.btn.join-btn(type='submit') View More Details
             else
               a.btn.join-btn(href='/login') Login to Join
   else

@@ -90,7 +90,6 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
   // prompt message
   let message: string = '';
 
-  
   if (event.attendees.includes(userId)) {
       message = 'You already joined this event!';
   } else {
@@ -110,9 +109,9 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
 
   // render the page with prompt
   res.render('events/list', {
-    title:       'Dining Events',
+    title: 'Dining Events',
     events: eventsWithHostName,
-    user:        req.session.user,
+    user: req.session.user,
     message,
   });
 });
@@ -120,14 +119,29 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
 // Get details for a specific event
 router.get('/:id', authMiddleware, (req: Request, res: Response) => {
   const eventId: string = req.params.id;
-  
-  // In a real implementation, this would fetch from the database
-  // For the starter code, we'll return a 404 error as specified in requirements
-  res.status(404).json({ 
-    error: 'API not implemented',
-    message: 'This is a starter code. The backend API for retrieving event details is not implemented.',
-    eventId
-  });
+  const event = eventDb.getById(eventId);
+
+  if (!event) {
+    res.status(404).json({
+      error: 'Event not found',
+      eventId,
+    });
+    return;
+  }
+
+  const hostUser = userDb.getById(event.host);
+  const hostName = hostUser ? hostUser.name : 'Unknown';
+
+  const eventsWithHostName = {
+    ...event,
+    hostName,
+  }
+
+  res.render('events/detail', {
+    title: 'Dining Events',
+    event: eventsWithHostName,
+    user: req.session.user
+  })
 });
 
 export default router;
