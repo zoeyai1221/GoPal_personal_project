@@ -144,4 +144,34 @@ router.get('/:id', authMiddleware, (req: Request, res: Response) => {
   })
 });
 
+// Search or filter by event's name or date
+router.get('/', authMiddleware, (req: Request, res: Response) => {
+  const query = (req.query.search as string) || '';
+  const date = (req.query.date as string) || '';
+
+  let events = eventDb.getAll();
+
+  if (query) {
+    events = eventDb.searchByName(query);
+  }
+
+  if (date) {
+    events = eventDb.filterByDate(date);
+  }
+  
+  const eventsWithHostName = events.map(evt => ({
+    ...evt,
+    hostName: userDb.getById(evt.host)?.name ?? 'Unknown'
+  }));
+
+  res.render('events/list', {
+    title: 'Dining Events',
+    events: eventsWithHostName,
+    user: req.session.user,
+    search: query,
+    date,
+    query,
+  })
+});
+
 export default router;

@@ -159,6 +159,53 @@ textarea {
   margin-top: 2rem;
 }
 
+/* Filter Form */
+.filter-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-form .search-box, .filter-form .date-box {
+  flex: 1;
+  padding: 0.5em;
+}
+
+.filter-form button, .filter-form .clear-btn {
+  padding: 0.5em 1em;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  border-radius: 4px;
+  /* cursor: pointer; */
+  text-decoration: none;    /* for <a> */
+  color: #333;
+  white-space: nowrap;
+}
+
+.filter-form button {
+  background: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+.filter-form .clear-btn {
+  background: #eee;
+  color: #333;
+  border-color: #ddd;
+  font-size: 0.9rem;
+}
+
+/* hover effect */
+.filter-form button:hover {
+  background: #45a049;
+  border-color: #45a049;
+}
+
+.filter-form .clear-btn:hover {
+  background: #ddd;
+  border-color: #ccc;
+}
+
 /* Event Cards */
 .events-list {
   display: grid;

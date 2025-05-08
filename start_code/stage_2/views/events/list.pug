@@ -13,6 +13,12 @@ block content
     else
       a.btn.primary(href='/login') Login to Create Event
 
+  form.filter-form(action='events' method='GET')
+      input.search-box(type='text' name='search' value=(query || '') placeholder='Search by Event or Restaurant Name')
+      input.date-box(type='date' name='date' value=date)
+      button(type='submit') Filter
+      a.clear-btn(href='/events') Clear Filters
+
   if events && events.length > 0
     .events-list
       each event in events
