@@ -30,6 +30,9 @@ html
       if error
         .alert.alert-danger= error
       
+      if success
+        .alert.alert-success= success
+
       block content
         
     script(src='/js/script.js')

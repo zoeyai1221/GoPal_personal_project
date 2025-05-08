@@ -306,6 +306,12 @@ textarea {
   border: 1px solid #f5c6cb;
 }
 
+.alert-success {
+  background-color: #d7f8e0;
+  color: #1c7234;
+  border: 1px solid #c6f5cf;
+}
+
 /* Error page */
 .error-container {
   text-align: center;
