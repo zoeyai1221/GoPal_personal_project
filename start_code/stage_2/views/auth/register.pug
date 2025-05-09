@@ -7,11 +7,11 @@ block content
     form.form-container(action='/register' method='POST')
       .form-group
         label(for='name') Name
-        input#name(type='text' name='name' required)
+        input#name(type='text' name='name' value=(name || '') required)
       
       .form-group
         label(for='email') Email
-        input#email(type='email' name='email' required)
+        input#email(type='email' name='email' value=(email || '') required)
       
       .form-group
         label(for='password') Password

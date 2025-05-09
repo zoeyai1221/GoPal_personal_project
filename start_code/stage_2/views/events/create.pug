@@ -11,6 +11,10 @@ block content
     .form-group
       label(for='eventLocation') Location
       input#eventLocation(type='text' name='location' required)
+
+    .form-group
+      label(for='eventLocation') Restaurant
+      input#eventLocation(type='text' name='restaurant' required)
     
     .form-group
       label(for='eventDate') Date
@@ -26,7 +30,8 @@ block content
     
     .form-group
       label(for='eventMaxAttendees') Maximum Attendees
-      input#eventMaxAttendees(type='number' name='maxAttendees' min='1' value='5')
+      input#eventMaxAttendees(type='number' name='maxAttendees' placeholder='Max for 4' min='1' max='4' value='4')
+      //- comments
     
     .form-actions
       button.btn.primary(type='submit') Create Event
