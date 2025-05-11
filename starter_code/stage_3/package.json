@@ -1,0 +1,15 @@
+{
+  "name": "gopal-full-stack",
+  "version": "1.0.0",
+  "description": "GoPal Event Planning Application",
+  "scripts": {
+    "client": "cd frontend && npm start",
+    "server": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "test": "cd backend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
