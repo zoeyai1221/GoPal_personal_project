@@ -1,7 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { Event, AuthenticatedRequest } from '../types';
+import { Event, AuthenticatedRequest, EventType, DiningEvent, TripEvent } from '../types';
 import { authMiddleware } from '../middlewares/auth';
 import databaseManagerInstance from '../db/databaseManager';
+import { error } from 'console';
 
 const router: Router = Router();
 const eventDb = databaseManagerInstance.getEventDb();
@@ -15,7 +16,7 @@ eventDb.initialize().catch(err => {
 
 // Event list route - displays all dining events (no auth required to view)
 router.get('/dining', (req: Request, res: Response) => {
-  const events = eventDb.getAll();
+  const events = eventDb.getAll().filter( e => e.type === EventType.Dining);
 
   const eventsWithHostName = events.map(event => {
     const hostUser = userDb.getById(event.host);
@@ -27,11 +28,30 @@ router.get('/dining', (req: Request, res: Response) => {
 
   res.render('events/list', {
     title: 'Dining Events',
+    eventType: 'dining',
     events: eventsWithHostName,
     user: req.session.user
   });
 })
 
+router.get('/trip', (req: Request, res: Response) => {
+  const events = eventDb.getAll().filter( e => e.type === EventType.Trip);
+
+  const eventsWithHostName = events.map(event => {
+    const hostUser = userDb.getById(event.host);
+    return {
+      ...event,
+      hostName: hostUser ? hostUser.name : 'Unknown'
+    };
+  });
+
+  res.render('events/list', {
+    title: 'Trip Events',
+    eventType: 'trip',
+    events: eventsWithHostName,
+    user: req.session.user
+  });
+})
 
 // Get form for creating a new event
 router.get('/create', authMiddleware, (req: Request, res: Response) => {
@@ -52,20 +72,45 @@ router.post('/create', authMiddleware, async (req: Request, res: Response) => {
     return;
   }
 
-  const { name, date, time, description, location, restaurant } = req.body;
+  const { type, name, date, time, description, location, restaurant, maxAttendees, endDate, destination } = req.body;
 
-  const newEvent: Omit<Event, 'id'> = {
-    name,
-    date,
-    time,
-    description,
-    location,
-    restaurant,
-    host: req.session.user.id,
-    attendees: [req.session.user.id] // Host automatically joins
+  let newEvent: Event;
+
+  if (type === EventType.Dining) {
+    const e: Omit<DiningEvent, 'id'> = {
+      type,
+      name,
+      date,
+      time,
+      description,
+      location,
+      restaurant,
+      maxAttendees: maxAttendees ? Number(maxAttendees) : undefined,
+      host: req.session.user.id,
+      attendees: [req.session.user.id] // Host automatically joins
+    }
+    newEvent = eventDb.create<DiningEvent>(e);
+  } else if (type === EventType.Trip) {
+    const e: Omit<TripEvent, 'id'> = {
+      type,
+      name,
+      date,
+      time,
+      description,
+      location,
+      endDate,
+      destination,
+      maxAttendees: maxAttendees ? Number(maxAttendees) : undefined,
+      host: req.session.user.id,
+      attendees: [req.session.user.id] // Host automatically joins
+    }
+    newEvent = eventDb.create<TripEvent>(e);
+  } else {
+    res.status(400).json({ error: 'Invalid event type'});
+    return;
   }
-
-  const event = eventDb.create(newEvent);
+  
+  // const event = eventDb.create(newEvent);
   await eventDb.save();
 
   res.redirect('/');

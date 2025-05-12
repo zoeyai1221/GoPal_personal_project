@@ -27,6 +27,56 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Form validation for create event form
     const createEventForm = document.querySelector('form[action="/events/create"]');
+
+    // Add event type selector
+    const typeSelect = document.getElementById('type');
+    const diningFields = document.querySelectorAll('.dining-fields');
+    const tripFields = document.querySelectorAll('.trip-fields');
+
+    function onTypeChange() {
+      const t = typeSelect.value;
+
+      // Toggle dining fields
+      if (diningFields) {
+        diningFields.forEach(field => {
+          field.style.display = t === 'dining' ? 'block' : 'none';
+
+          // Find input elements and set/remove required attribute
+          const inputs = field.querySelectorAll('input, textarea, select');
+          inputs.forEach(input => {
+            if (t === 'dining') {
+              input.setAttribute('required', '');
+            } else {
+              input.removeAttribute('required');
+            }
+          });
+        });
+      }
+
+      // Toggle dining fields
+      if (tripFields) {
+          tripFields.forEach(field => {
+            field.style.display = t === 'trip' ? 'block' : 'none';
+
+            // Find input elements and set/remove required attribute
+            const inputs = field.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+              if (t === 'trip') {
+                input.setAttribute('required', '');
+              } else {
+                input.removeAttribute('required');
+              }
+            });
+          });
+      }
+    }
+
+    if (typeSelect) {
+      typeSelect.addEventListener('change', onTypeChange);
+      // Call onTypeChange initially to set the initial state
+      onTypeChange();
+    }
+    
     if (createEventForm) {
       createEventForm.addEventListener('submit', function(event) {
         // Get form elements
@@ -34,7 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateInput = document.getElementById('eventDate');
         const timeInput = document.getElementById('eventTime');
         const descriptionInput = document.getElementById('eventDescription');
+        const endDateInput = document.getElementById('eventEndDate');
         
+        if(!typeSelect.value) {
+          alert('Please choose one type');
+          event.preventDefault();
+          return;
+        }
+
         // Basic validation
         if (nameInput && nameInput.value.trim() === '') {
           alert('Please enter an event name');
@@ -49,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Validate date is in the future
-        if (dateInput && timeInput) {
+        if (dateInput && timeInput && endDateInput) {
           const eventDate = new Date(`${dateInput.value}T${timeInput.value}`);
           const now = new Date();
           
@@ -139,5 +196,4 @@ document.addEventListener('DOMContentLoaded', function() {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regex.test(email);
     }
-      
   });

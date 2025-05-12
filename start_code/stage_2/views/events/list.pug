@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  h2.section-title Dining Events
+  h2.section-title= title || (eventType === 'trip' ? 'Trip Events' : 'Dining Events')
 
   if message
     script.
@@ -29,9 +29,18 @@ block content
               span.event-date
                 strong Date: 
                 | #{event.date} at #{event.time}
-              span.event-restaurant
-                strong Restaurant: 
-                | #{event.restaurant}
+              if event.type === 'trip'
+                if event.endDate
+                  span.event-end-date
+                    strong End Date: 
+                    | #{event.endDate}
+                span.event-destination
+                  strong Destination: 
+                  | #{event.destination}
+              else
+                span.event-restaurant
+                  strong Restaurant: 
+                  | #{event.restaurant}
           
           .event-body
             p.event-description= event.description
@@ -50,10 +59,10 @@ block content
                 button.btn.join-btn(type='submit') View More Details
             else
               a.btn.join-btn(href='/login') Login to Join
-              a.btn.join-btn(href='/login') Login to View More
+              a.btn.join-btn(href='/login') Login to View More Details
   else
     .empty-state
-      p No events found. Be the first to create a dining event!
+      p No events found. Be the first to create an event!
       if user
         a.btn.secondary(href='/events/create') Create Event
       else

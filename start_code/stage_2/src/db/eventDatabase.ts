@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Event } from '../types';
+import { Event, EventType } from '../types';
 
 export class EventDatabase {
     private events: Map<string, Event> = new Map();
@@ -50,18 +50,43 @@ export class EventDatabase {
         return this.events.get(id);
     }
 
-    create(event: Omit<Event,'id'>): Event {
+    // create(event: Omit<Event,'id'>): Event {
+    //     const id = (this.nextId++).toString();
+    //     const newEvent: Event = { id, ...event };
+    //     this.events.set(id, newEvent);
+    //     return newEvent;
+    // }
+
+    /**
+     * Create a new event
+     * @param event - Event fields other than id
+     */
+    create<T extends Event>(event: Omit<T,'id'>): T {
         const id = (this.nextId++).toString();
-        const newEvent: Event = { id, ...event };
+        const newEvent = { id, ...event } as T;
         this.events.set(id, newEvent);
         return newEvent;
     }
 
-    update(id: string, eventData: Partial<Event>): Event | undefined {
-        const event = this.events.get(id);
+    // update(id: string, eventData: Partial<Event>): Event | undefined {
+    //     const event = this.events.get(id);
+    //     if (!event) return undefined;
+
+    //     const updatedEvent = { ...event, ...eventData };
+    //     this.events.set(id, updatedEvent);
+    //     return updatedEvent;
+    // }
+
+    /**
+     * update event per id
+     * @param id - the id of updated event
+     * @param eventData - the fields need update
+     */
+    update<T extends Event>(id: string, eventData: Partial<Omit<T,'id'>>): T | undefined {
+        const event = this.events.get(id) as T | undefined;
         if (!event) return undefined;
 
-        const updatedEvent = { ...event, ...eventData };
+        const updatedEvent = { ...event, ...eventData } as T;
         this.events.set(id, updatedEvent);
         return updatedEvent;
     }
@@ -70,10 +95,13 @@ export class EventDatabase {
 
     searchByName(query: string): Event[] {
         query = query.toLowerCase();
-        return this.getAll().filter(event => 
-            event.name.toLowerCase().includes(query)
-            || event.restaurant.toLowerCase().includes(query)
-        );
+        return this.getAll().filter(event => {
+            if (event.type === EventType.Dining) {
+                return event.name.toLowerCase().includes(query)
+                || event.restaurant.toLowerCase().includes(query)
+            }
+            return event.name.toLowerCase().includes(query)
+        });
     }
 
     filterByDate(date: string): Event[] {

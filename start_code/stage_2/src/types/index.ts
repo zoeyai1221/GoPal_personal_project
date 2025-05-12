@@ -8,8 +8,14 @@ export interface User {
   password?: string; // Marked as optional since we don't want to include it in responses
 }
 
+export enum EventType {
+  Dining = 'dining',
+  Trip = 'trip',
+}
+
 export interface Event {
   id: string;
+  type: EventType;
   name: string;
   location: string;
   date: string;
@@ -21,6 +27,18 @@ export interface Event {
   maxAttendees?: number;
   restaurant: string; // Add name manually first for simplicity
 }
+
+export interface DiningEvent extends Event {
+  type: EventType.Dining;
+  restaurant: string;
+}
+
+export interface TripEvent extends Event{
+  type: EventType.Trip;
+  endDate: string;
+}
+
+// export type Event = DiningEvent | TripEvent;
 
 export interface Restaurant {
   id: string;

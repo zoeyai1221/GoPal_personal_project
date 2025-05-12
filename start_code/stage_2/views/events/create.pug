@@ -1,24 +1,45 @@
 extends ../layout
 
 block content
-  h2.section-title Create New Dining Event
+  h2.section-title Create New Event
   
   form.form-container(action='/events/create' method='POST')
+    .form-group
+      label(for='type') Event Type 
+      select#type(name='type' required)
+        option(value='' disabled selected hidden) -- Please choose one type --
+        option(value='dining') Dining
+        option(value='trip') Trip
+
     .form-group
       label(for='eventName') Event Name
       input#eventName(type='text' name='name' required)
     
+    //- specifically for dining events
+    .form-group
+      .dining-fields(style='display:none')
+        label(for='restaurant') Restaurant
+        input#restaurant(type='text' name='restaurant')
+    
+    //- specifically for trip events
+    .form-group
+      .trip-fields(style='display:none')
+       label(for='eventLocation') Destination
+       input#destination(type='text' name='destination')
+
     .form-group
       label(for='eventLocation') Location
       input#eventLocation(type='text' name='location' required)
-
-    .form-group
-      label(for='eventLocation') Restaurant
-      input#eventLocation(type='text' name='restaurant' required)
     
     .form-group
-      label(for='eventDate') Date
+      label(for='eventDate') Start Date
       input#eventDate(type='date' name='date' required)
+    
+    //- specifically for trip events
+    .form-group
+      .trip-fields(style='display:none')
+       label(for='eventEndDate') End Date
+       input#eventEndDate(type='date' name='endDate')
     
     .form-group
       label(for='eventTime') Time
