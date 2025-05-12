@@ -13,9 +13,8 @@ export enum EventType {
   Trip = 'trip',
 }
 
-export interface Event {
+export interface BaseEvent {
   id: string;
-  type: EventType;
   name: string;
   location: string;
   date: string;
@@ -25,20 +24,22 @@ export interface Event {
   // attendees: number;
   attendees: string[]; // Array of attendee IDs
   maxAttendees?: number;
-  restaurant: string; // Add name manually first for simplicity
+  // restaurant: string; // Add name manually first for simplicity
+  type: EventType;
 }
 
-export interface DiningEvent extends Event {
+export interface DiningEvent extends BaseEvent {
   type: EventType.Dining;
   restaurant: string;
 }
 
-export interface TripEvent extends Event{
+export interface TripEvent extends BaseEvent{
   type: EventType.Trip;
   endDate: string;
+  destination: string;
 }
 
-// export type Event = DiningEvent | TripEvent;
+export type Event = DiningEvent | TripEvent;
 
 export interface Restaurant {
   id: string;
