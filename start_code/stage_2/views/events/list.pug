@@ -1,6 +1,8 @@
 extends ../layout
 
 block content
+  - const basePath = '/events' + (eventType ? '/' + eventType : '')
+
   h2.section-title= title || (eventType === 'trip' ? 'Trip Events' : 'Dining Events')
 
   if message
@@ -16,11 +18,11 @@ block content
   //- add the leading slash so it always hits the /events route
   //- otherwise, the browser treats "events" as a path relative to wherever you are now
   //- e.g. when you’re already at /events, it posts to /events/events (which doesn’t exist) instead of /events
-  form.filter-form(action='/events' method='GET')
-      input.search-box(type='text' name='search' value=(query || '') placeholder='Search by Event or Restaurant Name')
+  form.filter-form(action=basePath method='GET')
+      input.search-box(type='text' name='search' value=(query || '') placeholder=eventType === 'trip' ? 'Search by Event or Destination' : 'Search by Event or Restaurant Name')
       input.date-box(type='date' name='date' value=date)
       button(type='submit') Filter
-      a.clear-btn(href='/events') Clear Filters
+      a.clear-btn(href=basePath) Clear Filters
 
   if events && events.length > 0
     .events-list

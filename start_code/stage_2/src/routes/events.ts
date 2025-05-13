@@ -15,25 +15,83 @@ eventDb.initialize().catch(err => {
 })
 
 // Event list route - displays all dining events (no auth required to view)
+// Search or filter by event's name or date
+router.get('/', (req: Request, res: Response) => {
+  const query = (req.query.search as string) || '';
+  const date = (req.query.date as string) || '';
+
+  let events = eventDb.getAll();
+
+  if (query) {
+    events = eventDb.searchByName(query);
+  }
+
+  if (date) {
+    events = eventDb.filterByDate(date);
+  }
+  
+  const eventsWithHostName = events.map(evt => ({
+    ...evt,
+    hostName: userDb.getById(evt.host)?.name ?? 'Unknown'
+  }));
+
+  res.render('events/list', {
+    title: 'Events',
+    events: eventsWithHostName,
+    user: req.session.user,
+    search: query,
+    date,
+    query,
+  })
+});
+
+// Events Dining Page
 router.get('/dining', (req: Request, res: Response) => {
-  const events = EventService.getByTypeWithHost(EventType.Dining);
+  const query = (req.query.search as string) || '';
+  const date = (req.query.date  as string) || '';
+
+  let events = EventService.getByTypeWithHost(EventType.Dining);
+
+  if (query) {
+    events = EventService.searchByName(events, query);
+  }
+
+  if (date) {
+    events = EventService.filterByDate(events, date);
+  }
 
   res.render('events/list', {
     title: 'Dining Events',
     eventType: 'dining',
     events,
-    user: req.session.user
+    user: req.session.user,
+    query: query,
+    date,
   });
 })
 
+// Events Trip Page
 router.get('/trip', (req: Request, res: Response) => {
-  const events = EventService.getByTypeWithHost(EventType.Trip);
+  const query = (req.query.search as string) || '';
+  const date = (req.query.date  as string) || '';
+
+  let events = EventService.getByTypeWithHost(EventType.Trip);
+
+  if (query) {
+    events = EventService.searchByName(events, query);
+  }
+
+  if (date) {
+    events = EventService.filterByDate(events, date);
+  }
 
   res.render('events/list', {
     title: 'Trip Events',
     eventType: 'trip',
     events,
-    user: req.session.user
+    user: req.session.user,
+    query: query,
+    date,
   });
 })
 
@@ -154,36 +212,6 @@ router.get('/:id', authMiddleware, (req: Request, res: Response) => {
     title: 'Dining Events',
     event,
     user: req.session.user
-  })
-});
-
-// Search or filter by event's name or date
-router.get('/', (req: Request, res: Response) => {
-  const query = (req.query.search as string) || '';
-  const date = (req.query.date as string) || '';
-
-  let events = eventDb.getAll();
-
-  if (query) {
-    events = eventDb.searchByName(query);
-  }
-
-  if (date) {
-    events = eventDb.filterByDate(date);
-  }
-  
-  const eventsWithHostName = events.map(evt => ({
-    ...evt,
-    hostName: userDb.getById(evt.host)?.name ?? 'Unknown'
-  }));
-
-  res.render('events/list', {
-    title: 'Dining Events',
-    events: eventsWithHostName,
-    user: req.session.user,
-    search: query,
-    date,
-    query,
   })
 });
 

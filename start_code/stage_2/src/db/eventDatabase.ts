@@ -50,13 +50,6 @@ export class EventDatabase {
         return this.events.get(id);
     }
 
-    // create(event: Omit<Event,'id'>): Event {
-    //     const id = (this.nextId++).toString();
-    //     const newEvent: Event = { id, ...event };
-    //     this.events.set(id, newEvent);
-    //     return newEvent;
-    // }
-
     /**
      * Create a new event
      * @param event - Event fields other than id
@@ -67,15 +60,6 @@ export class EventDatabase {
         this.events.set(id, newEvent);
         return newEvent;
     }
-
-    // update(id: string, eventData: Partial<Event>): Event | undefined {
-    //     const event = this.events.get(id);
-    //     if (!event) return undefined;
-
-    //     const updatedEvent = { ...event, ...eventData };
-    //     this.events.set(id, updatedEvent);
-    //     return updatedEvent;
-    // }
 
     /**
      * update event per id
@@ -99,8 +83,14 @@ export class EventDatabase {
             if (event.type === EventType.Dining) {
                 return event.name.toLowerCase().includes(query)
                 || event.restaurant.toLowerCase().includes(query)
-            }
-            return event.name.toLowerCase().includes(query)
+            };
+
+            if (event.type === EventType.Trip) {
+                return event.name.toLowerCase().includes(query)
+                || event.destination.toLowerCase().includes(query)
+            };
+            
+            return (event as any).name.toLowerCase().includes(query)
         });
     }
 
@@ -112,5 +102,3 @@ export class EventDatabase {
         return this.events.delete(id);
     }
 }
-
-// export const eventDb = new EventDatabase();
