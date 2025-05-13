@@ -33,12 +33,20 @@ router.post('/profile', authMiddleware, async (req: Request, res: Response) => {
   const userId = req.session.user!.id;
   const { name } = req.body;
 
+  const createdEvents = EventService.getCreatedEvents(userId);
+  const joinedEvents = EventService.getJoinedEvents(userId);
+  const stats = {
+        createdCount: createdEvents.length,
+        joinedCount: joinedEvents.length,
+      }
+
   // Handle if no changes happened
   if (name === userDb.getById(userId)?.name) {
     return res.render('users/profile', {
       title: 'Your Profile',
       user: req.session.user,
-      error: 'No changes'
+      error: 'No changes',
+      stats,
     })
   }
   // update in the session
@@ -49,6 +57,7 @@ router.post('/profile', authMiddleware, async (req: Request, res: Response) => {
       title: 'Your Profile',
       user: req.session.user,
       error: 'User not found',
+      stats,
     });
   }
 
@@ -61,7 +70,8 @@ router.post('/profile', authMiddleware, async (req: Request, res: Response) => {
   return res.render('users/profile', {
     title: 'Your Profile',
     user: req.session.user,
-    success: 'Profile updated successfully!'
+    success: 'Profile updated successfully!',
+    stats,
   });
 
 });
@@ -71,11 +81,19 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
   const userId = req.session.user!.id;
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
+  const createdEvents = EventService.getCreatedEvents(userId);
+  const joinedEvents = EventService.getJoinedEvents(userId);
+  const stats = {
+        createdCount: createdEvents.length,
+        joinedCount: joinedEvents.length,
+      }
+
   if (currentPassword !== userDb.getById(userId)?.password) {
     return res.render('users/profile', {
       title: 'Your Profile',
       user: req.session.user,
-      error: 'Current password is wrong'
+      error: 'Current password is wrong',
+      stats,
     });
   }
 
@@ -83,7 +101,8 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
     return res.render('users/profile', {
       title: 'Your Profile',
       user: req.session.user,
-      error: 'New passwords do not match'
+      error: 'New passwords do not match',
+      stats,
     });
   } 
 
@@ -94,7 +113,8 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
   return res.render('users/profile', {
     title: 'Your Profile',
     user: req.session.user,
-    success: 'Password changed successfully!'
+    success: 'Password changed successfully!',
+    stats,
   });
 });
 
