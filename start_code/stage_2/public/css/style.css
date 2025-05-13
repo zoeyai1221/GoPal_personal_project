@@ -88,12 +88,16 @@ body {
   background-color: #7f8c8d;
 }
 
-.join-btn {
+.join-btn, .view-details-btn {
   background-color: #27ae60;
   color: white;
 }
 
 .join-btn:hover {
+  background-color: #2ecc71;
+}
+
+.view-details-btn:hover {
   background-color: #2ecc71;
 }
 

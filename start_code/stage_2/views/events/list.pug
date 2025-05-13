@@ -59,10 +59,10 @@ block content
               form(action=`/events/join/${event.id}` method='POST')
                 button.btn.join-btn(type='submit') Join Event
               form(action=`/events/${event.id}`)
-                button.btn.join-btn(type='submit') View More Details
+                button.btn.view-details-btn(type='submit') View More Details
             else
               a.btn.join-btn(href='/login') Login to Join
-              a.btn.join-btn(href='/login') Login to View More Details
+              a.btn.view-details-btn(href='/login') Login to View More Details
   else
     .empty-state
       p No events found. Be the first to create an event!
