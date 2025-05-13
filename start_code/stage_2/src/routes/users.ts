@@ -5,18 +5,37 @@ import databaseManagerInstance from '../db/databaseManager';
 
 const router: Router = Router();
 const userDb = databaseManagerInstance.getUserDb();
+const eventDb = databaseManagerInstance.getEventDb();
+
+// Helper: get user's created events
+function getCreatedEvents(userId: string) {
+  return eventDb.getAll().filter(e => e.host === userId);
+}
+
+// Helper: get user's joined events
+function getJoinedEvents(userId: string) {
+  return eventDb.getAll().filter(e => e.attendees.includes(userId));
+}
 
 // User profile route
 router.get('/profile', authMiddleware, (req: Request, res: Response) => {
   // In a real implementation, we would fetch user details from a database
   // For the starter code, we'll use the session data
 
-  const user = req.session.user;
+  const user = req.session.user!;
+
+  // Get user's events
+  const createdEvents = getCreatedEvents(user.id);
+  const joinedEvents = getJoinedEvents(user.id);
 
   res.render('users/profile', { 
     title: 'Your Profile', 
     // user: req.session.user 
     user,
+    stats: {
+      createdCount: createdEvents.length,
+      joinedCount: joinedEvents.length,
+    }
   });
 });
 
@@ -87,6 +106,29 @@ router.post('/change-password', authMiddleware, async (req: Request, res: Respon
     title: 'Your Profile',
     user: req.session.user,
     success: 'Password changed successfully!'
+  });
+});
+
+// Add My Events Module
+router.get('/events/created', authMiddleware, (req: Request, res: Response) => {
+  const user = req.session.user!;
+  const events = getCreatedEvents(user.id);
+
+  res.render('events/list', {
+    title: 'Events I Created',
+    events,
+    user,
+  });
+});
+
+router.get('/events/joined', authMiddleware, (req: Request, res: Response) => {
+  const user = req.session.user!;
+  const events = getJoinedEvents(user.id);
+
+  res.render('events/list', {
+    title: 'Events I Joined',
+    events,
+    user,
   });
 });
 
