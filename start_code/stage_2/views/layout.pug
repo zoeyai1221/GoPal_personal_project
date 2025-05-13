@@ -30,6 +30,11 @@ html
       if error
         .alert.alert-danger= error
       
+      if success
+        .alert.alert-success= success
+
       block content
         
-    script(src='/js/script.js')
+    script.
+      window.currentUser = !{JSON.stringify(user || null)}; // set up user to global var not just a local one in pug
+    script(defer src='/js/script.js')
