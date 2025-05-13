@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { Event, AuthenticatedRequest, EventType, DiningEvent, TripEvent } from '../types';
 import { authMiddleware } from '../middlewares/auth';
 import databaseManagerInstance from '../db/databaseManager';
-import { error } from 'console';
+import { EventService } from '../services/eventService';
 
 const router: Router = Router();
 const eventDb = databaseManagerInstance.getEventDb();
@@ -16,39 +16,23 @@ eventDb.initialize().catch(err => {
 
 // Event list route - displays all dining events (no auth required to view)
 router.get('/dining', (req: Request, res: Response) => {
-  const events = eventDb.getAll().filter( e => e.type === EventType.Dining);
-
-  const eventsWithHostName = events.map(event => {
-    const hostUser = userDb.getById(event.host);
-    return {
-      ...event,
-      hostName: hostUser ? hostUser.name : 'Unknown'
-    };
-  });
+  const events = EventService.getByTypeWithHost(EventType.Dining);
 
   res.render('events/list', {
     title: 'Dining Events',
     eventType: 'dining',
-    events: eventsWithHostName,
+    events,
     user: req.session.user
   });
 })
 
 router.get('/trip', (req: Request, res: Response) => {
-  const events = eventDb.getAll().filter( e => e.type === EventType.Trip);
-
-  const eventsWithHostName = events.map(event => {
-    const hostUser = userDb.getById(event.host);
-    return {
-      ...event,
-      hostName: hostUser ? hostUser.name : 'Unknown'
-    };
-  });
+  const events = EventService.getByTypeWithHost(EventType.Trip);
 
   res.render('events/list', {
     title: 'Trip Events',
     eventType: 'trip',
-    events: eventsWithHostName,
+    events,
     user: req.session.user
   });
 })
@@ -109,8 +93,7 @@ router.post('/create', authMiddleware, async (req: Request, res: Response) => {
     res.status(400).json({ error: 'Invalid event type'});
     return;
   }
-  
-  // const event = eventDb.create(newEvent);
+
   await eventDb.save();
 
   res.redirect('/');
@@ -140,22 +123,15 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
   } else {
     event.attendees.push(userId);
     await eventDb.save();
-    message = 'You have successfully joined! Enjoy the meal with your buddy!';
+    message = 'You have successfully joined! Enjoy with your buddy!';
   }
 
-  const events = eventDb.getAll();
-  const eventsWithHostName = events.map(event => {
-    const hostUser = userDb.getById(event.host);
-    return {
-      ...event,
-      hostName: hostUser ? hostUser.name : 'Unknown'
-    };
-  });
+  const events = EventService.getAllWithHostName();
 
   // render the page with prompt
   res.render('events/list', {
     title: 'Dining Events',
-    events: eventsWithHostName,
+    events,
     user: req.session.user,
     message,
   });
@@ -164,7 +140,7 @@ router.post('/join/:id', authMiddleware, async (req: Request, res: Response) => 
 // Get details for a specific event
 router.get('/:id', authMiddleware, (req: Request, res: Response) => {
   const eventId: string = req.params.id;
-  const event = eventDb.getById(eventId);
+  const event = EventService.getByIdWithHost(eventId);
 
   if (!event) {
     res.status(404).json({
@@ -174,23 +150,15 @@ router.get('/:id', authMiddleware, (req: Request, res: Response) => {
     return;
   }
 
-  const hostUser = userDb.getById(event.host);
-  const hostName = hostUser ? hostUser.name : 'Unknown';
-
-  const eventsWithHostName = {
-    ...event,
-    hostName,
-  }
-
   res.render('events/detail', {
     title: 'Dining Events',
-    event: eventsWithHostName,
+    event,
     user: req.session.user
   })
 });
 
 // Search or filter by event's name or date
-router.get('/', authMiddleware, (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   const query = (req.query.search as string) || '';
   const date = (req.query.date as string) || '';
 
