@@ -13,7 +13,10 @@ block content
     else
       a.btn.primary(href='/login') Login to Create Event
 
-  form.filter-form(action='events' method='GET')
+  //- add the leading slash so it always hits the /events route
+  //- otherwise, the browser treats "events" as a path relative to wherever you are now
+  //- e.g. when you’re already at /events, it posts to /events/events (which doesn’t exist) instead of /events
+  form.filter-form(action='/events' method='GET')
       input.search-box(type='text' name='search' value=(query || '') placeholder='Search by Event or Restaurant Name')
       input.date-box(type='date' name='date' value=date)
       button(type='submit') Filter
