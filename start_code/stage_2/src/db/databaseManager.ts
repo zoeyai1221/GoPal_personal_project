@@ -1,5 +1,5 @@
-import { EventDatabase } from "./eventDatabase";
-import { UserDatabase } from "./userDatabase";
+import { EventDatabase } from "./refactor/EventDatabase";
+import { UserDatabase } from "./refactor/UserDatabase";
 
 class DatabaseManager {
     private userDb: UserDatabase;

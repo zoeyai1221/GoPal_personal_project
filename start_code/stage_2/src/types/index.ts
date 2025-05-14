@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 
-export interface User {
-  id: string; // Ensure id is always a string, not undefined
+export interface Indexed {
+  id: string;
+}
+
+export interface User extends Indexed {
   name: string;
   email: string;
   password?: string; // Marked as optional since we don't want to include it in responses
@@ -13,8 +16,7 @@ export enum EventType {
   Trip = 'trip',
 }
 
-export interface BaseEvent {
-  id: string;
+export interface BaseEvent extends Indexed {
   name: string;
   location: string;
   date: string;
