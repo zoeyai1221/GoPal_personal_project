@@ -88,12 +88,16 @@ body {
   background-color: #7f8c8d;
 }
 
-.join-btn {
+.join-btn, .view-details-btn {
   background-color: #27ae60;
   color: white;
 }
 
 .join-btn:hover {
+  background-color: #2ecc71;
+}
+
+.view-details-btn:hover {
   background-color: #2ecc71;
 }
 
@@ -159,6 +163,53 @@ textarea {
   margin-top: 2rem;
 }
 
+/* Filter Form */
+.filter-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-form .search-box, .filter-form .date-box {
+  flex: 1;
+  padding: 0.5em;
+}
+
+.filter-form button, .filter-form .clear-btn {
+  padding: 0.5em 1em;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  border-radius: 4px;
+  /* cursor: pointer; */
+  text-decoration: none;    /* for <a> */
+  color: #333;
+  white-space: nowrap;
+}
+
+.filter-form button {
+  background: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+.filter-form .clear-btn {
+  background: #eee;
+  color: #333;
+  border-color: #ddd;
+  font-size: 0.9rem;
+}
+
+/* hover effect */
+.filter-form button:hover {
+  background: #45a049;
+  border-color: #45a049;
+}
+
+.filter-form .clear-btn:hover {
+  background: #ddd;
+  border-color: #ccc;
+}
+
 /* Event Cards */
 .events-list {
   display: grid;
@@ -207,6 +258,48 @@ textarea {
 }
 
 .event-actions {
+  padding: 1rem 1.5rem;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.event-actions .btn {
+  flex: 1;
+  /* text-align: center; */
+}
+
+/* Event Details */
+.detail-card {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.detail-header {
+  background-color: #f9f9f9;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-title {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+
+.detail-body {
+  padding: 1.5rem;
+}
+
+.detail-description, .detail-date, .detail-restaurant, .detail-location, .detail-host, .detail-attendees {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.detail-actions {
   padding: 1rem 1.5rem;
   background-color: #f9f9f9;
   border-top: 1px solid #eee;
@@ -262,6 +355,12 @@ textarea {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+  background-color: #d7f8e0;
+  color: #1c7234;
+  border: 1px solid #c6f5cf;
 }
 
 /* Error page */

@@ -1,0 +1,37 @@
+extends ../layout
+
+block content
+    h2.section-title Dining Events #{event.name}
+
+    .detail-card
+        .detail-header
+            h3.detail-title=event.name
+            
+        .detail-body
+            .detail-date
+                strong Date: 
+                | #{event.date} at #{event.time}
+            .detail-restaurant
+                strong Restaurant: 
+                | #{event.restaurant}
+            .detail-location
+                strong Location: 
+                | #{event.location}
+            .detail-host
+                strong Hosted by: 
+                | #{event.hostName}
+            .detail-attendees
+                strong Attendees: 
+                | #{event.attendees.length} people joined 
+            .detail-description
+                strong Description:
+                p.detail-description=event.description
+        
+        .detail-actions
+            if user
+                form(action=`/events/join/${event.id}` method='POST')
+                    button.btn.join-btn(type='submit') Join Event
+            else
+                a.btn.join-btn(href='/login') Login to Join 
+
+    a.btn.secondary(href="/") Back to Main Page

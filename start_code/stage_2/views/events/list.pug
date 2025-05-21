@@ -1,13 +1,28 @@
 extends ../layout
 
 block content
-  h2.section-title Dining Events
-  
+  - const basePath = '/events' + (eventType ? '/' + eventType : '')
+
+  h2.section-title= title || (eventType === 'trip' ? 'Trip Events' : 'Dining Events')
+
+  if message
+    script.
+      window.alert("#{message}");
+
   .actions-bar
     if user
       a.btn.primary(href='/events/create') Create New Event
     else
       a.btn.primary(href='/login') Login to Create Event
+
+  //- add the leading slash so it always hits the /events route
+  //- otherwise, the browser treats "events" as a path relative to wherever you are now
+  //- e.g. when you’re already at /events, it posts to /events/events (which doesn’t exist) instead of /events
+  form.filter-form(action=basePath method='GET')
+      input.search-box(type='text' name='search' value=(query || '') placeholder=eventType === 'trip' ? 'Search by Event or Destination' : 'Search by Event or Restaurant Name')
+      input.date-box(type='date' name='date' value=date)
+      button(type='submit') Filter
+      a.clear-btn(href=basePath) Clear Filters
 
   if events && events.length > 0
     .events-list
@@ -19,28 +34,40 @@ block content
               span.event-date
                 strong Date: 
                 | #{event.date} at #{event.time}
-              span.event-location
-                strong Location: 
-                | #{event.location}
+              if event.type === 'trip'
+                if event.endDate
+                  span.event-end-date
+                    strong End Date: 
+                    | #{event.endDate}
+                span.event-destination
+                  strong Destination: 
+                  | #{event.destination}
+              else
+                span.event-restaurant
+                  strong Restaurant: 
+                  | #{event.restaurant}
           
           .event-body
             p.event-description= event.description
             .event-host
               strong Hosted by: 
-              | #{event.host}
+              | #{event.hostName}
             .event-attendees
               strong Attendees: 
-              | #{event.attendees} people joined
+              | #{event.attendees.length} people joined
           
           .event-actions
             if user
               form(action=`/events/join/${event.id}` method='POST')
                 button.btn.join-btn(type='submit') Join Event
+              form(action=`/events/${event.id}`)
+                button.btn.view-details-btn(type='submit') View More Details
             else
               a.btn.join-btn(href='/login') Login to Join
+              a.btn.view-details-btn(href='/login') Login to View More Details
   else
     .empty-state
-      p No events found. Be the first to create a dining event!
+      p No events found. Be the first to create an event!
       if user
         a.btn.secondary(href='/events/create') Create Event
       else

@@ -1,12 +1,12 @@
 {
   "name": "app",
   "version": "1.0.0",
-  "description": "",
+  "description": "This repository contains starter code for a simple Node.js Express web application with TypeScript that allows users to create, browse, and join dining events.",
   "main": "dist/app.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npx tsc",
     "start": "node dist/app.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "npx ts-node-dev --respawn --transpile-only src/app.ts",
     "watch": "tsc --watch"
   },
   "keywords": [

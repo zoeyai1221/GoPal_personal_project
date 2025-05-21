@@ -37,6 +37,19 @@ block content
           
           .form-actions
             button.btn.primary(type='submit') Change Password
+      
+      .profile-section
+        h3 My Events
+        form.form-container(action='/users/profile/my-event')
+          .form-group(style='display: flex; justify-content: space-between; align-items: center;')
+            label(for='linkCreated')
+              a#linkCreated(href='/users/events/created') Created
+            span.event-count #{stats.createdCount}
+          .form-group(style='display: flex; justify-content: space-between; align-items: center;')
+            label(for='linkJoined')
+              a#linkJoined(href='/users/events/joined') Joined
+            span.event-count #{stats.joinedCount}
+
   else
     .error-message
       p You need to be logged in to view your profile.

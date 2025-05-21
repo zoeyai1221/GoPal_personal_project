@@ -1,37 +1,146 @@
 import { Request, Response, Router } from 'express';
 import { AuthenticatedRequest } from '../types';
 import { authMiddleware } from '../middlewares/auth';
+import databaseManagerInstance from '../db/databaseManager';
+import { EventService } from '../services/eventService';
 
 const router: Router = Router();
+const userDb = databaseManagerInstance.getUserDb();
+const eventDb = databaseManagerInstance.getEventDb();
 
 // User profile route
 router.get('/profile', authMiddleware, (req: Request, res: Response) => {
   // In a real implementation, we would fetch user details from a database
   // For the starter code, we'll use the session data
+  const user = req.session.user!;
+
+  // Get user's events
+  const createdEvents = EventService.getCreatedEvents(user.id);
+  const joinedEvents = EventService.getJoinedEvents(user.id);
+
   res.render('users/profile', { 
     title: 'Your Profile', 
-    user: req.session.user 
+    user,
+    stats: {
+      createdCount: createdEvents.length,
+      joinedCount: joinedEvents.length,
+    }
   });
 });
 
 // Update user profile (POST handler)
-router.post('/profile', authMiddleware, (req: Request, res: Response) => {
-  // In a real implementation, this would update the database
-  // For the starter code, we'll return a 404 error as specified in requirements
-  res.status(404).json({ 
-    error: 'API not implemented',
-    message: 'This is a starter code. The backend API for updating user profiles is not implemented.' 
+router.post('/profile', authMiddleware, async (req: Request, res: Response) => {
+  const userId = req.session.user!.id;
+  const { name } = req.body;
+
+  const createdEvents = EventService.getCreatedEvents(userId);
+  const joinedEvents = EventService.getJoinedEvents(userId);
+  const stats = {
+        createdCount: createdEvents.length,
+        joinedCount: joinedEvents.length,
+      }
+
+  // Handle if no changes happened
+  if (name === userDb.getById(userId)?.name) {
+    return res.render('users/profile', {
+      title: 'Your Profile',
+      user: req.session.user,
+      error: 'No changes',
+      stats,
+    })
+  }
+  // update in the session
+  const updated = userDb.update(userId, { name: name.trim() });
+
+  if (!updated) {
+    return res.render('users/profile', {
+      title: 'Your Profile',
+      user: req.session.user,
+      error: 'User not found',
+      stats,
+    });
+  }
+
+  // save to disk
+  await userDb.save();
+
+  // sync up the session
+  req.session.user = updated;
+
+  return res.render('users/profile', {
+    title: 'Your Profile',
+    user: req.session.user,
+    success: 'Profile updated successfully!',
+    stats,
   });
+
 });
 
 // Change password (POST handler)
-router.post('/change-password', authMiddleware, (req: Request, res: Response) => {
-  // In a real implementation, this would update the password in the database
-  // For the starter code, we'll return a 404 error as specified in requirements
-  res.status(404).json({ 
-    error: 'API not implemented',
-    message: 'This is a starter code. The backend API for changing passwords is not implemented.' 
+router.post('/change-password', authMiddleware, async (req: Request, res: Response) => {
+  const userId = req.session.user!.id;
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  const createdEvents = EventService.getCreatedEvents(userId);
+  const joinedEvents = EventService.getJoinedEvents(userId);
+  const stats = {
+        createdCount: createdEvents.length,
+        joinedCount: joinedEvents.length,
+      }
+
+  if (currentPassword !== userDb.getById(userId)?.password) {
+    return res.render('users/profile', {
+      title: 'Your Profile',
+      user: req.session.user,
+      error: 'Current password is wrong',
+      stats,
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.render('users/profile', {
+      title: 'Your Profile',
+      user: req.session.user,
+      error: 'New passwords do not match',
+      stats,
+    });
+  } 
+
+  const updated = userDb.update(userId, { password: newPassword });
+  await userDb.save();
+  req.session.user = updated;
+
+  return res.render('users/profile', {
+    title: 'Your Profile',
+    user: req.session.user,
+    success: 'Password changed successfully!',
+    stats,
   });
 });
+
+// Add My Events Module
+router.get('/events/created', authMiddleware, (req: Request, res: Response) => {
+  const user = req.session.user!;
+  const events = EventService.getCreatedEvents(user.id);
+
+  res.render('events/list', {
+    title: 'Events I Created',
+    events,
+    user,
+  });
+});
+
+router.get('/events/joined', authMiddleware, (req: Request, res: Response) => {
+  const user = req.session.user!;
+  const events = EventService.getJoinedEvents(user.id);
+
+  res.render('events/list', {
+    title: 'Events I Joined',
+    events,
+    user,
+  });
+});
+
+// Delete user
 
 export default router;
